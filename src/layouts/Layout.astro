@@ -14,10 +14,11 @@ const {
   author,
   socialLinks,
   socialImage,
-  canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
 } = SITE_CONFIG;
 
-const ogImgUrl = canonicalURL + socialImage;
+const siteBase = Astro.site?.href || "";
+const canonicalURL = new URL(Astro.url.pathname, siteBase).toString();
+const ogImgUrl = new URL(socialImage, siteBase).toString();
 ---
 
 <!doctype html>

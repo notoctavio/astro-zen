@@ -1,27 +1,119 @@
 ---
 import type { HeroProps } from "@types";
-type Props = HeroProps;
 
 const { name, specialty, summary, email } = Astro.props;
 ---
 
-<section class="py-24 md:py-32" id="#hero">
-  <h1
-    class="mb-1.5 font-serif text-7xl font-bold tracking-tightest text-white sm:text-8xl md:mb-0 md:text-9xl"
-  >
-    {name}
-  </h1>
-  <p
-    class="mb-9 font-serif text-4xl leading-[46px] font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl"
-  >
-    {specialty}
-  </p>
-  <p class="mb-16 text-base font-normal text-neutral md:text-lg">
-    {summary}
-  </p>
+<section class="py-24 md:py-32" id="hero">
+  <h1 class="mb-1.5 font-serif text-7xl font-bold tracking-tightest text-white sm:text-8xl md:mb-0 md:text-9xl">{name}</h1>
+  <p class="mb-9 font-serif text-4xl leading-[46px] font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl">{specialty}</p>
+  <p class="mb-16 text-base font-normal text-neutral md:text-lg">{summary}</p>
 
-  <a
-    class="inline-block rounded-full bg-primary px-8 py-5 text-sm leading-5 font-medium text-[#fff]"
-    href={`mailto:${email}`}>Get in Touch</a
-  >
+  <!-- Contact + Download CV buttons -->
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="relative inline-block" id="contactRoot">
+      <button
+        type="button"
+        id="contactToggle"
+        class="rounded-full bg-primary px-8 py-5 text-sm leading-5 font-medium text-white shadow-sm hover:shadow-primary/30 transition"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Get in Touch
+      </button>
+      <div
+        id="contactPopover"
+        class="hidden absolute z-20 mt-2 w-60 origin-top-left rounded-xl border border-neutral/30 bg-[#1c232d]/95 p-4 backdrop-blur-sm shadow-lg"
+        role="menu"
+        aria-label="Contact options"
+      >
+        <p class="mb-2 text-xs font-medium tracking-wide text-neutral/60 uppercase">Contact Options</p>
+        <div class="flex flex-col gap-2">
+          <a
+            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=Opportunity%20to%20Connect`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral hover:bg-primary/10 hover:text-white transition"
+            role="menuitem"
+          >
+            <span class="h-2 w-2 rounded-full bg-primary/70 group-hover:bg-primary"></span>
+            Compose in Gmail
+          </a>
+          <button
+            type="button"
+            id="copyEmailBtn"
+            class="group flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-neutral hover:bg-primary/10 hover:text-white transition"
+            role="menuitem"
+            data-email={email}
+          >
+            <span class="h-2 w-2 rounded-full bg-primary/70 group-hover:bg-primary"></span>
+            Copy email address
+          </button>
+        </div>
+        <div class="mt-3 border-t border-neutral/30 pt-3">
+          <p class="text-[11px] leading-relaxed text-neutral/60">Use Gmail or copy the address to contact me.</p>
+        </div>
+      </div>
+    </div>
+
+    <a
+      href="/cv.pdf"
+      download
+      class="rounded-full border border-primary/50 px-4 py-2 text-xs font-medium text-primary hover:bg-primary/10 transition"
+      aria-label="Download CV PDF"
+    >
+      Download CV
+    </a>
+  </div>
+
+  <div
+    id="copyToast"
+    class="fixed bottom-4 right-4 hidden rounded-md border border-neutral/30 bg-[#1c232d]/90 px-4 py-2 text-xs text-neutral/80 backdrop-blur-sm"
+    role="status"
+    aria-live="polite"
+  >Email copied!</div>
+
+  <script>
+    (function(){
+      const toggle = document.getElementById('contactToggle');
+      const pop = document.getElementById('contactPopover');
+      const root = document.getElementById('contactRoot');
+      const copyBtn = document.getElementById('copyEmailBtn');
+      const toast = document.getElementById('copyToast');
+
+      function closePopover(){
+        pop?.classList.add('hidden');
+        toggle?.setAttribute('aria-expanded', 'false');
+      }
+      function openPopover(){
+        pop?.classList.remove('hidden');
+        toggle?.setAttribute('aria-expanded', 'true');
+      }
+
+      toggle?.addEventListener('click', () => {
+        if (!pop) return;
+        pop.classList.contains('hidden') ? openPopover() : closePopover();
+      });
+
+      // Type-safe outside click handler
+      document.addEventListener('click', (e: MouseEvent) => {
+        const target = e.target as Node | null; // cast to Node for contains()
+        if (root && target && !root.contains(target)) closePopover();
+      });
+      document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') closePopover(); });
+
+      copyBtn?.addEventListener('click', async () => {
+        const address = copyBtn.getAttribute('data-email');
+        if (!address) return;
+        try {
+          await navigator.clipboard.writeText(address);
+          toast?.classList.remove('hidden');
+          setTimeout(() => toast?.classList.add('hidden'), 1800);
+          closePopover();
+        } catch (e) {
+          alert('Copy failed. Email: ' + address);
+        }
+      });
+    })();
+  </script>
 </section>

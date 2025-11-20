@@ -12,6 +12,8 @@ export interface SiteContent {
   hero: HeroProps;
   experience: ExperienceProps[];
   projects: ProjectProps[];
+  skills: SkillsProps[];
+  certifications: CertificationsProps[];
   about: AboutProps;
 }
 
@@ -36,6 +38,19 @@ export interface ProjectProps {
   image: string;
   linkPreview?: string;
   linkSource?: string;
+}
+
+export interface SkillsProps {
+  category: string;
+  skillsList: string[];
+}
+
+export interface CertificationsProps {
+  name: string;
+  issuer: string;
+  issueDate: string;
+  credentialID?: string;
+  credentialURL?: string;
 }
 
 export interface AboutProps {
