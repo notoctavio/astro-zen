@@ -1,0 +1,32 @@
+---
+import Section from "./Section.astro";
+import type { SkillsProps } from "@types";
+
+interface Props {
+  skills: SkillsProps[];
+}
+
+const { skills } = Astro.props;
+---
+
+<Section text="Skills" href="skills">
+  <div class="grid gap-8 sm:grid-cols-2">
+    {
+      skills.map(({ category, skillsList }) => (
+        <div class="rounded-2xl border border-neutral/20 bg-[#1c232d]/50 p-6 backdrop-blur-sm">
+          <h3 class="mb-4 font-serif text-2xl font-semibold text-primary">
+            {category}
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {skillsList.map((skill) => (
+              <span class="rounded-full bg-primary/10 px-4 py-2 text-sm text-white hover:bg-primary/20 transition-colors">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
